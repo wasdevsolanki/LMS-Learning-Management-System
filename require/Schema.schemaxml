@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_general_ci">learning_management_system</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="roles" view="standard">
+<left>31</left>
+<top>435</top>
+<width>279</width>
+<height>163</height>
+<sql_create_table>CREATE TABLE `roles` (
+  `role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_id` int(11) DEFAULT NULL,
+  `role_type` varchar(50) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`role_id`),
+  KEY `status_id` (`status_id`),
+  CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `status` (`status_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="users" view="standard">
+<left>36</left>
+<top>43</top>
+<width>357</width>
+<height>311</height>
+<sql_create_table>CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `approved_by` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `password` text DEFAULT NULL,
+  `gender` enum('Male','Female') DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `image` blob DEFAULT NULL,
+  `home_town` text DEFAULT NULL,
+  `is_approve` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `approved_by` (`approved_by`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`approved_by`) REFERENCES `user_role` (`user_role_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="user_role" view="standard">
+<left>527</left>
+<top>73</top>
+<width>269</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `user_role` (
+  `user_role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `role_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_role_id`),
+  KEY `user_id` (`user_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="batches" view="standard">
+<left>1783</left>
+<top>27</top>
+<width>316</width>
+<height>214</height>
+<sql_create_table>CREATE TABLE `batches` (
+  `batch_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_id` int(11) DEFAULT NULL,
+  `batch_title` varchar(100) DEFAULT NULL,
+  `batch_description` text DEFAULT NULL,
+  `batch_start_date` date DEFAULT NULL,
+  `batch_end_date` date DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`batch_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="courses" view="standard">
+<left>1806</left>
+<top>294</top>
+<width>323</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `courses` (
+  `course_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_id` int(11) DEFAULT NULL,
+  `course_title` varchar(100) DEFAULT NULL,
+  `course_description` text DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`course_id`),
+  KEY `status_id` (`status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="batch_course" view="standard">
+<left>1411</left>
+<top>180</top>
+<width>348</width>
+<height>197</height>
+<sql_create_table>CREATE TABLE `batch_course` (
+  `batch_course_id` int(11) NOT NULL AUTO_INCREMENT,
+  `batch_id` int(11) DEFAULT NULL,
+  `course_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `number_of_topics` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`batch_course_id`),
+  KEY `batch_id` (`batch_id`),
+  KEY `course_id` (`course_id`),
+  CONSTRAINT `batch_course_ibfk_1` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`batch_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `batch_course_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="topic_file" view="standard">
+<left>1782</left>
+<top>990</top>
+<width>345</width>
+<height>197</height>
+<sql_create_table>CREATE TABLE `topic_file` (
+  `topic_file_id` int(11) NOT NULL AUTO_INCREMENT,
+  `topic_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `file_name` varchar(100) DEFAULT NULL,
+  `file_path` text DEFAULT NULL,
+  `file_type` enum('doc','ppt','pdf','png','jpg','jpeg') DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`topic_file_id`),
+  KEY `topic_id` (`topic_id`),
+  CONSTRAINT `topic_file_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="topics" view="standard">
+<left>1447</left>
+<top>817</top>
+<width>312</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `topics` (
+  `topic_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_id` int(11) DEFAULT NULL,
+  `topic_title` varchar(100) DEFAULT NULL,
+  `topic_description` text DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`topic_id`),
+  KEY `status_id` (`status_id`),
+  CONSTRAINT `topics_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `status` (`status_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="batch_course_topic" view="standard">
+<left>1783</left>
+<top>515</top>
+<width>343</width>
+<height>197</height>
+<sql_create_table>CREATE TABLE `batch_course_topic` (
+  `batch_course_topic_id` int(11) NOT NULL AUTO_INCREMENT,
+  `batch_course_id` int(11) DEFAULT NULL,
+  `topic_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `topic_priority` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`batch_course_topic_id`),
+  KEY `batch_course_id` (`batch_course_id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `status_id` (`status_id`),
+  CONSTRAINT `batch_course_topic_ibfk_1` FOREIGN KEY (`batch_course_id`) REFERENCES `batch_course` (`batch_course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `batch_course_topic_ibfk_2` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `batch_course_topic_ibfk_3` FOREIGN KEY (`status_id`) REFERENCES `status` (`status_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="user_role_batch_course_enrollment" view="standard">
+<left>906</left>
+<top>253</top>
+<width>395</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `user_role_batch_course_enrollment` (
+  `enrollment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_role_id` int(11) DEFAULT NULL,
+  `batch_course_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`enrollment_id`),
+  KEY `user_role_id` (`user_role_id`),
+  KEY `batch_course_id` (`batch_course_id`),
+  KEY `status_id` (`status_id`),
+  CONSTRAINT `user_role_batch_course_enrollment_ibfk_1` FOREIGN KEY (`user_role_id`) REFERENCES `user_role` (`user_role_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_role_batch_course_enrollment_ibfk_2` FOREIGN KEY (`batch_course_id`) REFERENCES `batch_course` (`batch_course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_role_batch_course_enrollment_ibfk_3` FOREIGN KEY (`status_id`) REFERENCES `status` (`status_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+<table name="status" view="standard">
+<left>331</left>
+<top>793</top>
+<width>542</width>
+<height>146</height>
+<sql_create_table>CREATE TABLE `status` (
+  `status_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` enum('Active','InActive','Enrolled','Disenrolled','InProcess','Completed') DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>
